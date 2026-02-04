@@ -23,8 +23,14 @@ public enum ErrorCode {
     /* =========================
      * 로그인 예외처리
      * ========================= */
-    INVALID_CREDENTIALS(HttpStatus.CONFLICT,"아이디 혹은 비밀번호가 일치하지 않습니다.");
-
+    INVALID_CREDENTIALS(HttpStatus.CONFLICT,"아이디 혹은 비밀번호가 일치하지 않습니다."),
+    /* =========================
+     * 인증 예외처리
+     * ========================= */
+    ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND,"계정 정보가 존재하지 않습니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED,"권한이 없습니다."),
+    ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED,"액세스 토큰이 만료되었습니다. 다시 로그인 해주세요."),
+    REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED,"리프레쉬 토큰이 만료되었습니다. 다시 로그인 해주세요.");
 
 
     private final HttpStatus status;

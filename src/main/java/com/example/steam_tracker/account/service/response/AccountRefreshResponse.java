@@ -5,8 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class LoginAccountResponse {
-    private final Long accountId;
+public class AccountRefreshResponse {
+
     private final String accessToken;
-    private final String refreshToken;
 }
