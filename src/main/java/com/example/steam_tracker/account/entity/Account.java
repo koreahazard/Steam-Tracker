@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Account extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long accountId;
 
     @Column(nullable = false,unique = true)
     private String username;
@@ -34,8 +34,8 @@ public class Account extends BaseEntity {
     {
         this.username = username;
         this.password = password;
-        this. email = email;
-        this. nickname = nickname;
+        this.email = email;
+        this.nickname = nickname;
     }
 
 }

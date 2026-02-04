@@ -1,8 +1,11 @@
 package com.example.steam_tracker.account.controller;
 
+import com.example.steam_tracker.account.controller.requestForm.LoginAccountRequestForm;
 import com.example.steam_tracker.account.controller.requestForm.SignUpAccountRequestForm;
 import com.example.steam_tracker.account.service.AccountService;
+import com.example.steam_tracker.account.service.request.LoginAccountRequest;
 import com.example.steam_tracker.account.service.request.SignUpAccountRequest;
+import com.example.steam_tracker.account.service.response.LoginAccountResponse;
 import com.example.steam_tracker.account.service.response.SignUpAccountResponse;
 import com.example.steam_tracker.common.ResponseForm;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +26,7 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ResponseForm<Object>> signup(
+    public ResponseEntity<ResponseForm<SignUpAccountResponse>> signup(
             @RequestBody SignUpAccountRequestForm form
     ) {
         log.info("회원가입 API 호출 - Username: {}", form.getUsername());
@@ -32,10 +35,26 @@ public class AccountController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ResponseForm.success(
-                        HttpStatus.OK,
                         "SUCCESS",
-                        "회원가입에 성공했습니다.",
+                        "회원가입이 완료됐습니다",
                         response
                 ));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ResponseForm<LoginAccountResponse>> login(
+            @RequestBody LoginAccountRequestForm form
+    ) {
+        log.info("로그인 API 호출 - Username: {}", form.getUsername());
+        LoginAccountRequest request = form.toLoginAccountRequest();
+        LoginAccountResponse response = accountService.loginAccount(request);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseForm.success(
+                        "SUCCESS",
+                        "로그인이 완료됐습니다",
+                        response
+                ));
+
     }
 }

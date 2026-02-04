@@ -9,15 +9,13 @@ import org.springframework.http.HttpStatus;
 public class ResponseForm<T> {
 
     private final boolean success;
-    private final int status;
     private final String code;
     private final String message;
     private final T data;
 
-    public static <T> ResponseForm<T> success(HttpStatus status, String code, String message, T data) {
+    public static <T> ResponseForm<T> success( String code, String message, T data) {
         return new ResponseForm<> (
                 true,
-                status.value(),
                 code,
                 message,
                 data
@@ -27,7 +25,6 @@ public class ResponseForm<T> {
     public static <T> ResponseForm<T> fail(ErrorCode errorCode) {
         return new ResponseForm<>(
                 false,
-                errorCode.getStatus().value(),
                 errorCode.name(),
                 errorCode.getMessage(),
                 null

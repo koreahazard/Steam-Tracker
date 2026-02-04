@@ -2,7 +2,9 @@ package com.example.steam_tracker.account.service;
 
 import com.example.steam_tracker.account.entity.Account;
 import com.example.steam_tracker.account.repository.AccountRepository;
+import com.example.steam_tracker.account.service.request.LoginAccountRequest;
 import com.example.steam_tracker.account.service.request.SignUpAccountRequest;
+import com.example.steam_tracker.account.service.response.LoginAccountResponse;
 import com.example.steam_tracker.account.service.response.SignUpAccountResponse;
 import com.example.steam_tracker.common.CustomException;
 import com.example.steam_tracker.common.ErrorCode;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -29,7 +32,6 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public SignUpAccountResponse signUpAccount(SignUpAccountRequest request) {
 
-
         validateRequestFormat(request);
         validateDuplicateAccount(request);
 
@@ -42,9 +44,17 @@ public class AccountServiceImpl implements AccountService {
 
         Account savedAccount = accountRepository.save(account);
 
-        log.info("회원가입 완료: ID = {}, Username = {}", savedAccount.getId(), savedAccount.getUsername());
+        log.info("회원가입 완료: AccountId = {}, Username = {}", savedAccount.getAccountId(), savedAccount.getUsername());
 
-        return new SignUpAccountResponse(savedAccount.getId());
+        return new SignUpAccountResponse(savedAccount.getAccountId());
+
+    }
+    @Override
+    @Transactional
+    public LoginAccountResponse loginAccount(LoginAccountRequest request) {
+            Account account = validateCredentials(request);
+        log.info("로그인 완료: AccountId = {}, Username = {}", account.getAccountId(), account.getUsername());
+        return new LoginAccountResponse(account.getAccountId());
 
     }
     private void validateDuplicateAccount(SignUpAccountRequest request) {
@@ -75,5 +85,21 @@ public class AccountServiceImpl implements AccountService {
         if (request.getEmail() == null || !request.getEmail().contains("@")) {
             throw new CustomException(ErrorCode.INVALID_EMAIL_FORMAT);
         }
+    }
+    private Account validateCredentials(LoginAccountRequest request)
+    {
+        Optional<Account> optionalAccount = accountRepository.findByUsername(request.getUsername());
+
+        if (optionalAccount.isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
+        }
+
+        Account account = optionalAccount.get();
+
+        if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
+            throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
+        }
+        return account;
+
     }
 }
