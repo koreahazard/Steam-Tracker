@@ -11,8 +11,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SteamScrapingServiceTest {
 
-    // 스프링의 도움(@Autowired)을 받지 않고 직접 객체를 만듭니다.
-    // 이렇게 하면 DB 설정(JPA)을 아예 건드리지 않습니다.
     private final SteamScrapingService steamScrapingService = new SteamScrapingServiceImpl();
 
     @Test
