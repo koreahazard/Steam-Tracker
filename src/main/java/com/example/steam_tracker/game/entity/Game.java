@@ -40,3 +40,4 @@ public class Game extends BaseEntity {
     boolean isActive = true;
 
 }
+//TODO: 생성자 만들어야함

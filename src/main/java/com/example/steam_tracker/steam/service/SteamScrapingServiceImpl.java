@@ -15,13 +15,13 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Service
 public class SteamScrapingServiceImpl implements SteamScrapingService {
-
+    //totalcount를 2와같은 작은 수로 요청해도 최소 24개 나오는듯함
     @Override
-    public Set<Integer> scrapingSteamAppId(int startRankIndex, int totalCount) {
+    public Set<Integer> scrapingSteamAppId(int startRankIndex, int batchsize) {
         Set<Integer> set = new HashSet<>();
         String url = String.format(
                 "https://store.steampowered.com/search/results/?query=&start=%d&count=%d&dynamic_data=&sort_by=ConcurrentUsers_DESC&snr=1_7_7_7000_7",
-                startRankIndex, totalCount);
+                startRankIndex, batchsize);
 
         try {
             log.info("스팀 AppID 페이지 요청 중: {}", url);

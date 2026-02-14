@@ -17,7 +17,6 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.transaction.Transactional;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
@@ -28,7 +27,6 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Slf4j
-@Getter
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
