@@ -6,6 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class CollectGameDataRequest {
-    private int startRankIndex;
-    private int totalCount;
+    private final int startRankIndex;
+    private final int totalCount;
 }

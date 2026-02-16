@@ -34,7 +34,7 @@ public class Game extends BaseEntity {
     private int discountPercent;
 
     @Column(nullable = false)
-    private int trendScore7d;
+    private double trendScore7d;
 
     @Column(nullable = false)
     boolean isActive = true;

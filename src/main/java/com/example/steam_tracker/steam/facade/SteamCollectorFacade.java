@@ -2,6 +2,7 @@ package com.example.steam_tracker.steam.facade;
 
 import com.example.steam_tracker.game.entity.Game;
 import com.example.steam_tracker.steam.facade.request.CollectGameDataRequest;
+import com.example.steam_tracker.steam.facade.response.CollectGameDataResponse;
 import com.example.steam_tracker.steam.service.SteamApiService;
 import com.example.steam_tracker.steam.service.SteamParsingService;
 import com.example.steam_tracker.steam.service.SteamScrapingService;
@@ -24,7 +25,7 @@ public class SteamCollectorFacade {
     private final SteamParsingService steamParsingService;
 
 
-    public List<Game> collectGameData(CollectGameDataRequest request) {
+    public List<CollectGameDataResponse> collectGameData(CollectGameDataRequest request) {
 
         int batchSize = 100;
         int start = request.getStartRankIndex();
@@ -62,11 +63,10 @@ public class SteamCollectorFacade {
         List<Integer> appIdList = new ArrayList<>(appIds);
         List<String> rawDataList = new ArrayList<>();
 
-        log.info("rawData{}개 수집 시작",appIdList.size());
+        log.info("rawData {}개 수집 시작",appIdList.size());
         for (int i = 0; i < appIdList.size(); i++) {
-            // 1. 현재 작업할 ID를 변수에 담아 가독성을 높입니다.
-            Integer currentAppId = appIdList.get(i);
 
+            Integer currentAppId = appIdList.get(i);
             String rawData = steamApiService.getGameDetail(currentAppId);
 
             if (rawData != null) {
@@ -94,10 +94,13 @@ public class SteamCollectorFacade {
 
         log.info("rawData수집 완료, 수집한 rawData 개수 ={}", rawDataList.size());
 
+        log.info("rawData 파싱 시작 - 대상 개수: {}개", rawDataList.size());
 
+        List<CollectGameDataResponse> response = steamParsingService.parseGamedetail(rawDataList);
 
+        log.info("rawData 파싱 완료 - 결과 개수: {}개", response.size());
 
-        return null;
+        return response;
 
 
     }
