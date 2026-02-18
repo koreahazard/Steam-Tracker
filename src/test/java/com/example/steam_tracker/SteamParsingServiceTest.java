@@ -27,14 +27,13 @@ public class SteamParsingServiceTest {
 
             if (realJson != null) {
                 // 3. 파싱 서비스 호출
-                List<CollectGameDataResponse> responses = steamParsingService.parseGamedetail(List.of(realJson));
+                List<CollectGameDataResponse> responses = steamParsingService.parseGameDetail(List.of(realJson));
 
                 // 4. 반환된 response 결과값 전체 출력
                 for (CollectGameDataResponse res : responses) {
                     System.out.println("==========================================");
                     System.out.println("AppID: " + res.getAppId());
                     System.out.println("게임명: " + res.getName());
-                    System.out.println("무료여부: " + res.isFree());
                     System.out.println("현재가: " + res.getCurrentPrice() + "원");
                     System.out.println("원래가격: " + res.getOriginalPrice() + "원");
                     System.out.println("할인율: " + res.getDiscountPercent() + "%");

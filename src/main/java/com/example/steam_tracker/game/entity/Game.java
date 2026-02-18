@@ -22,9 +22,6 @@ public class Game extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
-    private int concurrentPlayer;
-
-    @Column(nullable = false)
     private int currentPrice;
 
     @Column(nullable = false)
@@ -34,10 +31,16 @@ public class Game extends BaseEntity {
     private int discountPercent;
 
     @Column(nullable = false)
-    private double trendScore7d;
+    boolean isTracking = true;
 
-    @Column(nullable = false)
-    boolean isActive = true;
+    public Game(Long appId, String name, int currentPrice, int originalPrice, int discountPercent) {
+        this.appId = appId;
+        this.name = name;
+        this.currentPrice = currentPrice;
+        this.originalPrice = originalPrice;
+        this.discountPercent = discountPercent;
+
+    }
 
 }
-//TODO: 생성자 만들어야함
+

@@ -96,7 +96,7 @@ public class SteamCollectorFacade {
 
         log.info("rawData 파싱 시작 - 대상 개수: {}개", rawDataList.size());
 
-        List<CollectGameDataResponse> response = steamParsingService.parseGamedetail(rawDataList);
+        List<CollectGameDataResponse> response = steamParsingService.parseGameDetail(rawDataList);
 
         log.info("rawData 파싱 완료 - 결과 개수: {}개", response.size());
 

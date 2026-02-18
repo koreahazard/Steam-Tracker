@@ -8,12 +8,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @Table(name = "genre")
+@lombok.EqualsAndHashCode(of = "genreName")
 public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int genreId;
+    private Long genreId;
 
     @Column(nullable = false,unique = true)
-    private int genreName;
+    private String genreName;
+
+    public Genre(String genreName) {
+        this.genreName = genreName;
+    }
 
 }

@@ -19,50 +19,44 @@ public class SteamParsingServiceImpl implements SteamParsingService{
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public List<CollectGameDataResponse> parseGamedetail(List<String> rawDataList) {
+    public List<CollectGameDataResponse> parseGameDetail(List<String> rawDataList) {
         List<CollectGameDataResponse> parsedGameList = new ArrayList<>();
 
         for (String rawData : rawDataList) {
-
             try {
                 JsonNode root = objectMapper.readTree(rawData);
 
-                //appId key 추출
+                // 1. appId key 추출
                 Iterator<String> fieldNames = root.fieldNames();
                 if (!fieldNames.hasNext()) continue;
 
                 String appIdKey = fieldNames.next();
                 JsonNode appNode = root.get(appIdKey);
 
-                //success 체크
-                if (appNode == null || !appNode.path("success").asBoolean(false)) {
-                    continue;
-                }
-
+                // 2. success 체크 및 데이터 확보
+                if (appNode == null || !appNode.path("success").asBoolean(false)) continue;
                 JsonNode data = appNode.path("data");
 
-                //type 체크 (game만 허용)
-                if (!"game".equals(data.path("type").asText())) {
-                    continue;
-                }
+                // 3. 타입 체크 (game만 수집)
+                if (!"game".equals(data.path("type").asText())) continue;
 
-                Long appId = Long.parseLong(appIdKey);
-                String name = data.path("name").asText("");
-
-                boolean isFree = data.path("is_free").asBoolean(false);
-
+                // 4. 가격 데이터 처리 (is_free 필드는 무시)
                 int originalPrice = 0;
                 int currentPrice = 0;
                 int discountPercent = 0;
 
-                //가격 처리
-                if (!isFree && data.has("price_overview")) {
+                if (data.has("price_overview")) {
                     JsonNode price = data.path("price_overview");
-
+                    // 스팀 API는 원 단위에 00을 붙여서 주므로 100으로 나눔 (ex: 1000원 -> 100000)
                     originalPrice = price.path("initial").asInt(0) / 100;
                     currentPrice = price.path("final").asInt(0) / 100;
                     discountPercent = price.path("discount_percent").asInt(0);
+                } else {
+                    continue;
                 }
+
+                Long appId = Long.parseLong(appIdKey);
+                String name = data.path("name").asText("Unknown");
 
                 //장르 처리
                 List<String> genreNames = new ArrayList<>();
@@ -72,20 +66,17 @@ public class SteamParsingServiceImpl implements SteamParsingService{
                     }
                 }
 
-                CollectGameDataResponse parsedGameData = new CollectGameDataResponse(
+                parsedGameList.add(new CollectGameDataResponse(
                         appId,
                         name,
                         currentPrice,
                         originalPrice,
                         discountPercent,
-                        isFree,
                         genreNames
-                );
-
-                parsedGameList.add(parsedGameData);
+                ));
 
             } catch (Exception e) {
-                log.warn("파싱 실패 - 해당 JSON 스킵", e);
+                log.warn("AppID {} 파싱 중 에러 발생: {}", rawData, e.getMessage());
             }
         }
         return parsedGameList;

@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface SteamParsingService {
 
-    List<CollectGameDataResponse> parseGamedetail(List<String> rawDataList);
+    List<CollectGameDataResponse> parseGameDetail(List<String> rawDataList);
 }

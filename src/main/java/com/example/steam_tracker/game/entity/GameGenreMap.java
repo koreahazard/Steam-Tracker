@@ -21,5 +21,9 @@ public class GameGenreMap {
     @JoinColumn(name = "genre_id")
     private Genre genre;
 
+    public GameGenreMap(Game game, Genre genre) {
+        this.game = game;
+        this.genre = genre;
+    }
 
 }

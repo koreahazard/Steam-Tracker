@@ -30,7 +30,7 @@ public class SteamCollectorFacadeTest {
     @DisplayName("진짜 스팀 데이터 30개 수집 및 전체 결과 출력")
     void realDataCollectionTest() {
         // given: 30개 설정
-        int targetCount = 30;
+        int targetCount = 500;
         CollectGameDataRequest request = new CollectGameDataRequest(0, targetCount);
 
         // when: 실제 전체 프로세스 실행
@@ -46,7 +46,6 @@ public class SteamCollectorFacadeTest {
             System.out.println("------------------------------------------");
             System.out.println("AppID       : " + res.getAppId());
             System.out.println("게임명      : " + res.getName());
-            System.out.println("무료 여부   : " + (res.isFree() ? "YES" : "NO"));
             System.out.println("현재 판매가 : " + res.getCurrentPrice() + "원");
             System.out.println("원래 가격   : " + res.getOriginalPrice() + "원");
             System.out.println("현재 할인율 : " + res.getDiscountPercent() + "%");
