@@ -9,6 +9,7 @@ import com.example.steam_tracker.game.repository.GameRepository;
 import com.example.steam_tracker.game.repository.GenreRepository;
 import com.example.steam_tracker.game.repository.PriceHistoryRepository;
 import com.example.steam_tracker.steam.facade.response.CollectGameDataResponse;
+import com.example.steam_tracker.steam.facade.response.CollectPriceDataResponse;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -78,8 +79,73 @@ public class GameServiceImpl implements GameService{
                 gameList.size(), genreMap.size(), gameGenreMapList.size());
     }
     @Override
+    @Transactional
+    public void updatePriceData(List<CollectPriceDataResponse> dataList) {
+
+        List<Game> trackingGames = gameRepository.findAllByTrackingTrue();
+
+        // 조회를 빠르게 하기 위해 appId를 키로 하는 Map 생성
+        Map<Long, Game> gameMap = new HashMap<>();
+        for (Game g : trackingGames) {
+            gameMap.put(g.getAppId(), g);
+        }
+
+        List<PriceHistory> newPriceHistories = new ArrayList<>();
+        LocalDate snapshotDate = LocalDate.now();
+
+        // 2. 외부에서 가져온 최신 데이터(dataList)를 순회
+        for (CollectPriceDataResponse data : dataList) {
+            Game game = gameMap.get(data.getAppId());
+
+            // DB에 있고, 추적 중인 게임인 경우에만 처리
+            if (game != null) {
+
+                // 새로운 가격 이력 생성
+                if(data.getCurrentPrice()==0 && data.getOriginalPrice() ==0 ) {
+
+                    game.thisIsFreeGame(
+                            data.getCurrentPrice(),
+                            data.getOriginalPrice(),
+                            data.getDiscountPercent(),
+                            false
+                    );
+                }
+                else {
+                    //dirty checking
+                    game.updatePrice(
+                            data.getCurrentPrice(),
+                            data.getOriginalPrice(),
+                            data.getDiscountPercent()
+                    );
+                    PriceHistory history = new PriceHistory(
+                            game,
+                            data.getCurrentPrice(),
+                            data.getDiscountPercent(),
+                            snapshotDate
+                    );
+                    newPriceHistories.add(history);
+                }
+
+            }
+        }
+
+        // 3. 이력 데이터는 한 번에 저장
+        priceHistoryRepository.saveAll(newPriceHistories);
+
+        log.info("가격 업데이트 완료: {}개의 게임 상태 변경 및 이력 추가", newPriceHistories.size());
+    }
+    @Override
     public boolean isEmpty() {
         return gameRepository.count() == 0;
+    }
+    @Override
+    public List<Long> getTrackingAppIds() {
+        List<Game> trackingGames = gameRepository.findAllByTrackingTrue();
+        List<Long> appIdList = new ArrayList<>();
+        for (Game game : trackingGames) {
+            appIdList.add(game.getAppId());
+        }
+        return appIdList;
     }
 
 }

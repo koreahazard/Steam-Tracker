@@ -17,8 +17,8 @@ import java.util.Set;
 public class SteamScrapingServiceImpl implements SteamScrapingService {
     //totalcount를 2와같은 작은 수로 요청해도 최소 24개 나오는듯함
     @Override
-    public Set<Integer> scrapingSteamAppId(int startRankIndex, int batchsize) {
-        Set<Integer> set = new HashSet<>();
+    public Set<Long> scrapingSteamAppId(int startRankIndex, int batchsize) {
+        Set<Long> set = new HashSet<>();
         String url = String.format(
                 "https://store.steampowered.com/search/results/?query=&start=%d&count=%d&dynamic_data=&sort_by=ConcurrentUsers_DESC&snr=1_7_7_7000_7",
                 startRankIndex, batchsize);
@@ -49,10 +49,10 @@ public class SteamScrapingServiceImpl implements SteamScrapingService {
         return set;
     }
 
-    private void addAppIdToSet(Set<Integer> set, String idStr) {
+    private void addAppIdToSet(Set<Long> set, String idStr) {
         try {
             if (!idStr.isEmpty()) {
-                set.add(Integer.parseInt(idStr));
+                set.add(Long.parseLong(idStr));
             }
         } catch (NumberFormatException e) {
             log.warn("잘못된 AppID 형식 무시: {}", idStr);

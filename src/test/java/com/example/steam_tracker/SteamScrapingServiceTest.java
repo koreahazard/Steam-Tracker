@@ -21,7 +21,7 @@ public class SteamScrapingServiceTest {
         int totalCount = 29;
 
         // when
-        Set<Integer> appIds = steamScrapingService.scrapingSteamAppId(startRankIndex, totalCount);
+        Set<Long> appIds = steamScrapingService.scrapingSteamAppId(startRankIndex, totalCount);
 
         // then
         System.out.println("수집된 ID 개수: " + appIds.size());

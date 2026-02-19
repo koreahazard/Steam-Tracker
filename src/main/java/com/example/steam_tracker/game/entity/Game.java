@@ -31,7 +31,7 @@ public class Game extends BaseEntity {
     private int discountPercent;
 
     @Column(nullable = false)
-    boolean isTracking = true;
+    boolean tracking = true;
 
     public Game(Long appId, String name, int currentPrice, int originalPrice, int discountPercent) {
         this.appId = appId;
@@ -40,6 +40,32 @@ public class Game extends BaseEntity {
         this.originalPrice = originalPrice;
         this.discountPercent = discountPercent;
 
+    }
+    public void updatePrice(int newCurrentPrice,
+                            int newOriginalPrice,
+                            int newDiscountPercent) {
+
+        // 값이 모두 안 변했으면 수정 x
+        if (this.currentPrice == newCurrentPrice
+                && this.originalPrice == newOriginalPrice
+                && this.discountPercent == newDiscountPercent) {
+            return;
+        }
+
+        // 변경 발생 시에만 값 세팅
+        this.currentPrice = newCurrentPrice;
+        this.originalPrice = newOriginalPrice;
+        this.discountPercent = newDiscountPercent;
+    }
+
+    public void thisIsFreeGame(int currentPrice,
+                               int originalPrice,
+                               int discountPercent,
+                               boolean tracking) {
+        this.currentPrice = currentPrice;
+        this.originalPrice = originalPrice;
+        this.discountPercent = discountPercent;
+        this.tracking = tracking;
     }
 
 }

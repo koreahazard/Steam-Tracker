@@ -19,9 +19,9 @@ public class SteamParsingServiceTest {
     @DisplayName("실제 API 데이터 수집 및 파싱 결과 전체 출력")
     void printRealDataParsingResult() {
         // 1. 진짜 데이터를 가져올 AppID 리스트 (테스트용으로 730:글옵, 1091500:사펑 준비)
-        List<Integer> targetAppIds = List.of(578080, 1245620);
+        List<Long> targetAppIds = List.of(578080L, 1245620L);
 
-        for (Integer appId : targetAppIds) {
+        for (Long appId : targetAppIds) {
             // 2. 진짜 API 호출
             String realJson = steamApiService.getGameDetail(appId);
 

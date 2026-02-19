@@ -32,7 +32,7 @@ public class SteamApiServiceTest {
 
         // 2. 루프 돌며 단건 호출
         for (int i = 0; i < appIds.size(); i++) {
-            Integer appId = appIds.get(i);
+            Long appId = Long.valueOf(appIds.get(i));
 
             String response = steamApiService.getGameDetail(appId);
 

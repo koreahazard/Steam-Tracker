@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 
 @Slf4j
 @Service
@@ -14,7 +16,7 @@ public class SteamApiServiceImpl implements SteamApiService {
     private final RestTemplate restTemplate;
 
     @Override
-    public String getGameDetail(Integer appId) {
+    public String getGameDetail(Long appId) {
 
         String rawData = null;
 
@@ -33,6 +35,30 @@ public class SteamApiServiceImpl implements SteamApiService {
 
         return rawData;
 
+    }
+    @Override
+    public String getPriceOverview(Long appId) {
+        String rawData = null;
+
+        try {
+            // filters=price_overview 를 추가하여 가격 정보만 요청합니다.
+            String url = String.format(
+                    "https://store.steampowered.com/api/appdetails?appids=%d&cc=kr&filters=price_overview",
+                    appId
+            );
+
+            String response = restTemplate.getForObject(url, String.class);
+
+            if (response != null) {
+                log.info("AppID {} 가격 정보(PriceOverview) 수집 성공", appId);
+                rawData = response;
+            }
+
+        } catch (Exception e) {
+            log.error("AppID {} 가격 수집 중 에러 발생: {}", appId, e.getMessage());
+        }
+
+        return rawData;
     }
 
 }

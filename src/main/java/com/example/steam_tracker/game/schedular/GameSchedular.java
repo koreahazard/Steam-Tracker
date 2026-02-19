@@ -3,11 +3,14 @@ package com.example.steam_tracker.game.schedular;
 import com.example.steam_tracker.game.service.GameService;
 import com.example.steam_tracker.steam.facade.SteamCollectorFacade;
 import com.example.steam_tracker.steam.facade.request.CollectGameDataRequest;
+import com.example.steam_tracker.steam.facade.request.CollectPriceDataRequest;
 import com.example.steam_tracker.steam.facade.response.CollectGameDataResponse;
+import com.example.steam_tracker.steam.facade.response.CollectPriceDataResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -29,6 +32,35 @@ public class GameSchedular {
             List<CollectGameDataResponse> data = steamCollectorFacade.collectGameData(request);
             gameService.saveInitData(data);
         }
+        else {
+            log.info("초기 데이터가 이미 존재하여 수집을 건너뜁니다.");
+        }
     }
+
+    @Scheduled(cron = "0 0 0 * * *") // 매일 자정(00:00)에 실행
+    public void periodicCollect() {
+        log.info("가격 정보 업데이트 스케줄러 시작");
+
+        try {
+
+            List<Long> targetAppIdList = gameService.getTrackingAppIds();
+
+            if (targetAppIdList.isEmpty()) {
+                log.info("추적 중인 게임이 없어 스케줄러를 종료합니다.");
+                return;
+            }
+
+            CollectPriceDataRequest request = new CollectPriceDataRequest(targetAppIdList);
+            List<CollectPriceDataResponse> priceDataList = steamCollectorFacade.collectPriceData(request);
+
+            gameService.updatePriceData(priceDataList);
+
+            log.info("가격 정보 업데이트 완료");
+        } catch (Exception e) {
+            log.error("가격 정보 업데이트 중 오류 발생: {}", e.getMessage());
+        }
+    }
+
+
 
 }
