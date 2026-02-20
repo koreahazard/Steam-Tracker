@@ -41,7 +41,7 @@ public class SteamApiServiceImpl implements SteamApiService {
         String rawData = null;
 
         try {
-            // filters=price_overview 를 추가하여 가격 정보만 요청합니다.
+            // filters=price_overview 를 추가하여 가격 정보만 요청
             String url = String.format(
                     "https://store.steampowered.com/api/appdetails?appids=%d&cc=kr&filters=price_overview",
                     appId

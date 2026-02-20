@@ -26,11 +26,11 @@ public class SteamApiServiceTest {
     @Test
     @DisplayName("스팀 Api 호출 테스트")
     void testGetGameDetails() {
-        // 1. 테스트 데이터 (정상 ID + 없는 ID)
+        //테스트 데이터 (정상 ID + 없는 ID)
         List<Integer> appIds = List.of(9999999, 730, 578080);
         List<String> results = new ArrayList<>();
 
-        // 2. 루프 돌며 단건 호출
+        //루프 돌며 단건 호출
         for (int i = 0; i < appIds.size(); i++) {
             Long appId = Long.valueOf(appIds.get(i));
 
@@ -44,7 +44,7 @@ public class SteamApiServiceTest {
             }
 
             System.out.println(">>> [AppID " + appId + "] 수집된 데이터: " + response);
-            // 3. 마지막 요소가 아닐 때만 랜덤 딜레이 (여기도 필수!)
+            //마지막 요소가 아닐 때만 랜덤 딜레이 (여기도 필수!)
             if (i < appIds.size() - 1) {
                 try {
                     long delay = java.util.concurrent.ThreadLocalRandom.current().nextLong(2000, 4001);

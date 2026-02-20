@@ -15,7 +15,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Service
 public class SteamScrapingServiceImpl implements SteamScrapingService {
-    //totalcount를 2와같은 작은 수로 요청해도 최소 24개 나오는듯함
+    //totalcount를 2와같은 작은 수로 요청해도 최소 25개정도 나오는듯함
     @Override
     public Set<Long> scrapingSteamAppId(int startRankIndex, int batchsize) {
         Set<Long> set = new HashSet<>();

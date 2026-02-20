@@ -4,6 +4,7 @@ import com.example.steam_tracker.game.service.GameService;
 import com.example.steam_tracker.steam.facade.SteamCollectorFacade;
 import com.example.steam_tracker.steam.facade.request.CollectGameDataRequest;
 import com.example.steam_tracker.steam.facade.request.CollectPriceDataRequest;
+import com.example.steam_tracker.steam.facade.request.ExpandGameDataRequest;
 import com.example.steam_tracker.steam.facade.response.CollectGameDataResponse;
 import com.example.steam_tracker.steam.facade.response.CollectPriceDataResponse;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,9 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Component
 @Slf4j
@@ -39,16 +42,30 @@ public class GameSchedular {
 
     @Scheduled(cron = "0 0 0 * * *") // 매일 자정(00:00)에 실행
     public void periodicCollect() {
-        log.info("가격 정보 업데이트 스케줄러 시작");
+        log.info("주기적 업데이트 스케줄러 시작");
+        int minimumConstituentCount = 2000;
+        int startRankIndex = 2000;
+        int totalCount = 1000;
 
         try {
 
             List<Long> targetAppIdList = gameService.getTrackingAppIds();
+            if( targetAppIdList.size() < minimumConstituentCount )
+            {
+               ExpandGameDataRequest request = new ExpandGameDataRequest(targetAppIdList,startRankIndex,totalCount);
+                List<CollectGameDataResponse> data = steamCollectorFacade.expandGameData(request);
+                long randomDelay = ThreadLocalRandom.current().nextLong(2000, 5001);
+
+                log.info("Rate Limit 회피를 위해 {}ms 동안 대기합니다...", randomDelay);
+                Thread.sleep(randomDelay);
+                gameService.saveInitData(data);
+            }
 
             if (targetAppIdList.isEmpty()) {
                 log.info("추적 중인 게임이 없어 스케줄러를 종료합니다.");
                 return;
             }
+
 
             CollectPriceDataRequest request = new CollectPriceDataRequest(targetAppIdList);
             List<CollectPriceDataResponse> priceDataList = steamCollectorFacade.collectPriceData(request);

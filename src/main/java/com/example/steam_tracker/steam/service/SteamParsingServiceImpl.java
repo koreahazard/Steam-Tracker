@@ -27,21 +27,21 @@ public class SteamParsingServiceImpl implements SteamParsingService{
             try {
                 JsonNode root = objectMapper.readTree(rawData);
 
-                // 1. appId key 추출
+                //appId key 추출
                 Iterator<String> fieldNames = root.fieldNames();
                 if (!fieldNames.hasNext()) continue;
 
                 String appIdKey = fieldNames.next();
                 JsonNode appNode = root.get(appIdKey);
 
-                // 2. success 체크 및 데이터 확보
+                //success 체크 및 데이터 확보
                 if (appNode == null || !appNode.path("success").asBoolean(false)) continue;
                 JsonNode data = appNode.path("data");
 
-                // 3. 타입 체크 (game만 수집)
+                //타입 체크 (game만 수집)
                 if (!"game".equals(data.path("type").asText())) continue;
 
-                // 4. 가격 데이터 처리 (is_free 필드는 무시)
+                //가격 데이터 처리 (is_free 필드는 무시)
                 int originalPrice = 0;
                 int currentPrice = 0;
                 int discountPercent = 0;
@@ -95,7 +95,7 @@ public class SteamParsingServiceImpl implements SteamParsingService{
             try {
                 JsonNode root = objectMapper.readTree(rawData);
 
-                // 1. appId key 추출
+                //appId key 추출
                 Iterator<String> fieldNames = root.fieldNames();
                 if (!fieldNames.hasNext()) continue;
 
@@ -103,7 +103,7 @@ public class SteamParsingServiceImpl implements SteamParsingService{
                 Long appId = Long.parseLong(appIdKey);
                 JsonNode appNode = root.get(appIdKey);
 
-                // 2. success 체크
+                //success 체크
                 if (appNode == null || !appNode.path("success").asBoolean(false)) continue;
 
                 JsonNode data = appNode.path("data");
@@ -112,7 +112,7 @@ public class SteamParsingServiceImpl implements SteamParsingService{
                 int currentPrice = 0;
                 int discountPercent = 0;
 
-                // 3. 데이터가 비어있는 경우 (data: []) 또는 price_overview가 없는 경우
+                //데이터가 비어있는 경우 (data: []) 또는 price_overview가 없는 경우
                 if ((data.isArray() && data.isEmpty()) || !data.has("price_overview")) {
                     log.info("AppID {} : 가격 정보 없음 (무료 혹은 판매중단). 0원으로 설정합니다.", appId);
                     // 모든 가격을 0으로 둔 채로 리스트에 추가
@@ -120,7 +120,7 @@ public class SteamParsingServiceImpl implements SteamParsingService{
                     currentPrice = 0;
                     discountPercent = 0;
                 } else {
-                    // 4. 정상적인 가격 데이터가 있는 경우
+                    //정상적인 가격 데이터가 있는 경우
                     JsonNode price = data.path("price_overview");
 
                     originalPrice = price.path("initial").asInt(0) / 100;

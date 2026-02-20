@@ -93,7 +93,7 @@ public class GameServiceImpl implements GameService{
         List<PriceHistory> newPriceHistories = new ArrayList<>();
         LocalDate snapshotDate = LocalDate.now();
 
-        // 2. 외부에서 가져온 최신 데이터(dataList)를 순회
+        //외부에서 가져온 최신 데이터(dataList)를 순회
         for (CollectPriceDataResponse data : dataList) {
             Game game = gameMap.get(data.getAppId());
 
@@ -129,7 +129,6 @@ public class GameServiceImpl implements GameService{
             }
         }
 
-        // 3. 이력 데이터는 한 번에 저장
         priceHistoryRepository.saveAll(newPriceHistories);
 
         log.info("가격 업데이트 완료: {}개의 게임 상태 변경 및 이력 추가", newPriceHistories.size());
