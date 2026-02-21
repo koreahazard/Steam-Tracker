@@ -8,13 +8,15 @@ import com.example.steam_tracker.game.repository.GameGenreMapRepository;
 import com.example.steam_tracker.game.repository.GameRepository;
 import com.example.steam_tracker.game.repository.GenreRepository;
 import com.example.steam_tracker.game.repository.PriceHistoryRepository;
+import com.example.steam_tracker.game.service.response.GameIndexCalculationDataResponse;
 import com.example.steam_tracker.steam.facade.response.CollectGameDataResponse;
 import com.example.steam_tracker.steam.facade.response.CollectPriceDataResponse;
-import jakarta.transaction.Transactional;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -145,6 +147,10 @@ public class GameServiceImpl implements GameService{
             appIdList.add(game.getAppId());
         }
         return appIdList;
+    }
+    @Override
+    public GameIndexCalculationDataResponse getGameIndexCalculationData(List<Long> targetAppIdList) {
+        return gameRepository.getGameIndexCalculationData(targetAppIdList);
     }
 
 }

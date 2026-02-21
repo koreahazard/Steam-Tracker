@@ -7,6 +7,7 @@ import com.example.steam_tracker.steam.facade.request.CollectPriceDataRequest;
 import com.example.steam_tracker.steam.facade.request.ExpandGameDataRequest;
 import com.example.steam_tracker.steam.facade.response.CollectGameDataResponse;
 import com.example.steam_tracker.steam.facade.response.CollectPriceDataResponse;
+import com.example.steam_tracker.steamIndex.service.SteamIndexService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -25,6 +26,7 @@ public class GameSchedular {
 
     private final SteamCollectorFacade steamCollectorFacade;
     private final GameService gameService;
+    private final SteamIndexService steamIndexService;
 
     @EventListener(ApplicationReadyEvent.class)
     public void initialCollect() {
@@ -34,13 +36,18 @@ public class GameSchedular {
         if (gameService.isEmpty()) {
             List<CollectGameDataResponse> data = steamCollectorFacade.collectGameData(request);
             gameService.saveInitData(data);
+
+            List<Long> targetAppIdList = gameService.getTrackingAppIds();
+            steamIndexService.recordDailyIndex(targetAppIdList);
+            log.info("스팀 가격 지수 업데이트 완료");
+
         }
         else {
             log.info("초기 데이터가 이미 존재하여 수집을 건너뜁니다.");
         }
     }
 
-    @Scheduled(cron = "0 0 0 * * *") // 매일 자정(00:00)에 실행
+    @Scheduled(cron = "0 0 12 * * *") // 매일 점심(12:00)에 실행
     public void periodicCollect() {
         log.info("주기적 업데이트 스케줄러 시작");
         int minimumConstituentCount = 2000;
@@ -59,6 +66,8 @@ public class GameSchedular {
                 log.info("Rate Limit 회피를 위해 {}ms 동안 대기합니다...", randomDelay);
                 Thread.sleep(randomDelay);
                 gameService.saveInitData(data);
+
+
             }
 
             if (targetAppIdList.isEmpty()) {
@@ -66,13 +75,15 @@ public class GameSchedular {
                 return;
             }
 
-
             CollectPriceDataRequest request = new CollectPriceDataRequest(targetAppIdList);
             List<CollectPriceDataResponse> priceDataList = steamCollectorFacade.collectPriceData(request);
 
             gameService.updatePriceData(priceDataList);
-
             log.info("가격 정보 업데이트 완료");
+            targetAppIdList = gameService.getTrackingAppIds();
+            steamIndexService.recordDailyIndex(targetAppIdList);
+            log.info("스팀 가격 지수 업데이트 완료");
+
         } catch (Exception e) {
             log.error("가격 정보 업데이트 중 오류 발생: {}", e.getMessage());
         }

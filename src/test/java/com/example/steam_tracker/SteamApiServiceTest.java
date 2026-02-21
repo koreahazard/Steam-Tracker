@@ -44,7 +44,7 @@ public class SteamApiServiceTest {
             }
 
             System.out.println(">>> [AppID " + appId + "] 수집된 데이터: " + response);
-            //마지막 요소가 아닐 때만 랜덤 딜레이 (여기도 필수!)
+            //마지막 요소가 아닐 때만 랜덤 딜레이
             if (i < appIds.size() - 1) {
                 try {
                     long delay = java.util.concurrent.ThreadLocalRandom.current().nextLong(2000, 4001);

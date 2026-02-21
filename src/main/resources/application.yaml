@@ -6,7 +6,7 @@ spring:
     name: steam-tracker
 
   datasource:
-    url: jdbc:mysql://localhost:3306/steam_tracker_test?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/steam_tracker?serverTimezone=Asia/Seoul
     username: root
     password: ${SPRING_DATASOURCE_PASSWORD}
 
