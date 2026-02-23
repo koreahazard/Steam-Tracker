@@ -1,6 +1,9 @@
 package com.example.steam_tracker.game.service;
 
 import com.example.steam_tracker.game.service.response.GameIndexCalculationDataResponse;
+import com.example.steam_tracker.game.service.response.GameListResponse;
+import com.example.steam_tracker.game.service.response.GenreResponse;
+import com.example.steam_tracker.game.service.response.PriceHistoryResponse;
 import com.example.steam_tracker.steam.facade.response.CollectGameDataResponse;
 import com.example.steam_tracker.steam.facade.response.CollectPriceDataResponse;
 
@@ -13,5 +16,9 @@ public interface GameService {
     boolean isEmpty();
     List<Long> getTrackingAppIds();
     GameIndexCalculationDataResponse getGameIndexCalculationData(List<Long> targetAppIdList);
+    List<GenreResponse> getAllGenres();
+    List<GameListResponse> getGameList(int page, int size);
+    List<GameListResponse> getGameListByGenres(List<Long> genreIds, int page, int size);
+    List<PriceHistoryResponse> getPriceHistory(Long appId, int page, int size);
 
 }

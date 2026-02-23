@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -64,7 +65,9 @@ public class SteamIndexServiceImpl implements SteamIndexService {
         for (SteamIndex steamIndex : result) {
             responseList.add(new SteamIndexResponse(steamIndex));
         }
+        Collections.reverse(responseList);
         return responseList;
+
     }
 
 }

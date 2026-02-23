@@ -9,12 +9,18 @@ import com.example.steam_tracker.game.repository.GameRepository;
 import com.example.steam_tracker.game.repository.GenreRepository;
 import com.example.steam_tracker.game.repository.PriceHistoryRepository;
 import com.example.steam_tracker.game.service.response.GameIndexCalculationDataResponse;
+import com.example.steam_tracker.game.service.response.GameListResponse;
+import com.example.steam_tracker.game.service.response.GenreResponse;
+import com.example.steam_tracker.game.service.response.PriceHistoryResponse;
 import com.example.steam_tracker.steam.facade.response.CollectGameDataResponse;
 import com.example.steam_tracker.steam.facade.response.CollectPriceDataResponse;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -151,6 +157,49 @@ public class GameServiceImpl implements GameService{
     @Override
     public GameIndexCalculationDataResponse getGameIndexCalculationData(List<Long> targetAppIdList) {
         return gameRepository.getGameIndexCalculationData(targetAppIdList);
+    }
+    @Override
+    public List<GenreResponse> getAllGenres() {
+        List<Genre> genres = genreRepository.findAll();
+        List<GenreResponse> responseList = new ArrayList<>();
+        for (Genre genre : genres) {
+            responseList.add(new GenreResponse(genre.getGenreId(), genre.getGenreName()));
+        }
+        return responseList;
+    }
+    @Override
+    public List<GameListResponse> getGameList(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Game> games = gameRepository.findAllByTrackingTrue(pageable);
+        List<GameListResponse> responseList = new ArrayList<>();
+        for (Game game : games) {
+            responseList.add(new GameListResponse(game));
+        }
+        return responseList;
+    }
+
+    @Override
+    public List<GameListResponse> getGameListByGenres(List<Long> genreIds, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Game> games = gameRepository.findByGenreIds(genreIds, pageable);
+        List<GameListResponse> responseList = new ArrayList<>();
+        for (Game game : games) {
+            responseList.add(new GameListResponse(game));
+        }
+        return responseList;
+    }
+    @Override
+    public  List<PriceHistoryResponse> getPriceHistory(Long appId, int page, int size) {
+        Game game = gameRepository.findByAppId(appId)
+                .orElseThrow(() -> new RuntimeException("게임을 찾을 수 없습니다."));
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PriceHistory> priceHistories = priceHistoryRepository.findByGameOrderBySnapshotDateDesc(game, pageable);
+        List<PriceHistoryResponse> responseList = new ArrayList<>();
+        for (PriceHistory priceHistory : priceHistories) {
+            responseList.add(new PriceHistoryResponse(priceHistory));
+        }
+        Collections.reverse(responseList);
+        return responseList;
     }
 
 }

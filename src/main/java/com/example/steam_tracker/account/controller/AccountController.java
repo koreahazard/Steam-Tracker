@@ -99,12 +99,12 @@ public class AccountController {
 
         log.info("[토큰 재발급] 새 access 발급 완료");
 
-        return ResponseEntity.ok(
-                ResponseForm.success(
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseForm.success(
                         "SUCCESS",
                         "Access 토큰 재발급 완료",
                         response
-                )
-        );
+                ));
     }
 }
