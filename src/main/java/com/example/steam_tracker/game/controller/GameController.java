@@ -19,57 +19,59 @@ import java.util.List;
 @RequestMapping("/api/game")
 public class GameController {
 
-    private final GameService gameService;
+	private final GameService gameService;
 
-    @GetMapping("/genre")
-    public ResponseEntity<ResponseForm<List<GenreResponse>>> getAllGenres() {
-        log.info("장르 목록 조회 요청");
-        List<GenreResponse> response = gameService.getAllGenres();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ResponseForm.success(
-                        "SUCCESS",
-                        "장르 목록 조회 성공",
-                        response
-                ));
-    }
-    @GetMapping
-    public ResponseEntity<ResponseForm<List<GameListResponse>>> getGameList(
-            @RequestParam(required = false) List<Long> genreIds,
-            @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "20") int size
-    ) {
-        log.info("게임 목록 조회 요청 - genreIds: {}, page: {}, size: {}", genreIds, page, size);
-        List<GameListResponse> response;
-        if (genreIds == null || genreIds.isEmpty()) {
-            response = gameService.getGameList(page, size);
-        } else {
-            response = gameService.getGameListByGenres(genreIds, page, size);
-        }
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ResponseForm.success(
-                        "SUCCESS",
-                        "게임 목록 조회 성공",
-                        response
-                ));
-    }
-    @GetMapping("/{appId}/price-history")
-    public ResponseEntity<ResponseForm<List<PriceHistoryResponse>>> getPriceHistory(
-            @PathVariable Long appId,
-            @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "30") int size
-    ) {
-        log.info("가격 기록 조회 요청 - appId: {}, page: {}, size: {}", appId, page, size);
-        List<PriceHistoryResponse> response = gameService.getPriceHistory(appId, page, size);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ResponseForm.success(
-                        "SUCCESS",
-                        "가격 기록 조회 성공",
-                        response
-                ));
-    }
+	@GetMapping("/genre")
+	public ResponseEntity<ResponseForm<List<GenreResponse>>> getAllGenres() {
+		log.info("장르 목록 조회 요청");
+		List<GenreResponse> response = gameService.getAllGenres();
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(ResponseForm.success(
+						"SUCCESS",
+						"장르 목록 조회 성공",
+						response
+				));
+	}
+
+	@GetMapping
+	public ResponseEntity<ResponseForm<List<GameListResponse>>> getGameList(
+			@RequestParam(required = false) List<Long> genreIds,
+			@RequestParam(required = false, defaultValue = "0") int page,
+			@RequestParam(required = false, defaultValue = "20") int size
+	) {
+		log.info("게임 목록 조회 요청 - genreIds: {}, page: {}, size: {}", genreIds, page, size);
+		List<GameListResponse> response;
+		if (genreIds == null || genreIds.isEmpty()) {
+			response = gameService.getGameList(page, size);
+		} else {
+			response = gameService.getGameListByGenres(genreIds, page, size);
+		}
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(ResponseForm.success(
+						"SUCCESS",
+						"게임 목록 조회 성공",
+						response
+				));
+	}
+
+	@GetMapping("/{appId}/price-history")
+	public ResponseEntity<ResponseForm<List<PriceHistoryResponse>>> getPriceHistory(
+			@PathVariable Long appId,
+			@RequestParam(required = false, defaultValue = "0") int page,
+			@RequestParam(required = false, defaultValue = "30") int size
+	) {
+		log.info("가격 기록 조회 요청 - appId: {}, page: {}, size: {}", appId, page, size);
+		List<PriceHistoryResponse> response = gameService.getPriceHistory(appId, page, size);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(ResponseForm.success(
+						"SUCCESS",
+						"가격 기록 조회 성공",
+						response
+				));
+	}
 
 
 }

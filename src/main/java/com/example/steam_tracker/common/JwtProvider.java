@@ -10,93 +10,94 @@ import java.util.Date;
 @Component
 public class JwtProvider {
 
-    @Value("${JWT_SECRET}")
-    private String jwtSecret;
+	@Value("${JWT_SECRET}")
+	private String jwtSecret;
 
-    // 30분 = 30 * 60 * 1000 ms
-    @Value("${ACCESS_TOKEN_EXPIRATION_MS}")
-    private int accessTokenExpirationMs;
+	// 30분 = 30 * 60 * 1000 ms
+	@Value("${ACCESS_TOKEN_EXPIRATION_MS}")
+	private int accessTokenExpirationMs;
 
-    // 7일 = 7 * 24 * 60 * 60 * 1000 ms
-    @Value("${REFRESH_TOKEN_EXPIRATION_MS}")
-    private int refreshTokenExpirationMs;
+	// 7일 = 7 * 24 * 60 * 60 * 1000 ms
+	@Value("${REFRESH_TOKEN_EXPIRATION_MS}")
+	private int refreshTokenExpirationMs;
 
-    // ===== Getter 추가 =====
-    public String getJwtSecret() {
-        return jwtSecret;
-    }
-    public int getAccessTokenExpirationMs() {
-        return accessTokenExpirationMs;
-    }
+	// ===== Getter 추가 =====
+	public String getJwtSecret() {
+		return jwtSecret;
+	}
 
-    public int getRefreshTokenExpirationMs() {
-        return refreshTokenExpirationMs;
-    }
+	public int getAccessTokenExpirationMs() {
+		return accessTokenExpirationMs;
+	}
 
-    // 액세스 토큰 생성
-    public String generateAccessToken(Long accountId) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + accessTokenExpirationMs);
+	public int getRefreshTokenExpirationMs() {
+		return refreshTokenExpirationMs;
+	}
 
-        return Jwts.builder()
-                .setSubject(String.valueOf(accountId))
-                .claim("type", "access") // 액세스 토큰임을 명시
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS256)
-                .compact();
-    }
+	// 액세스 토큰 생성
+	public String generateAccessToken(Long accountId) {
+		Date now = new Date();
+		Date expiryDate = new Date(now.getTime() + accessTokenExpirationMs);
 
-    // 리프레시 토큰 생성
-    public String generateRefreshToken(Long accountId) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + refreshTokenExpirationMs);
+		return Jwts.builder()
+				.setSubject(String.valueOf(accountId))
+				.claim("type", "access") // 액세스 토큰임을 명시
+				.setIssuedAt(now)
+				.setExpiration(expiryDate)
+				.signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS256)
+				.compact();
+	}
 
-        return Jwts.builder()
-                .setSubject(String.valueOf(accountId))
-                .claim("type", "refresh") // 리프레시 토큰임을 명시
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS256)
-                .compact();
-    }
+	// 리프레시 토큰 생성
+	public String generateRefreshToken(Long accountId) {
+		Date now = new Date();
+		Date expiryDate = new Date(now.getTime() + refreshTokenExpirationMs);
 
-    // 토큰에서 계정ID 추출 및 타입 체크
-    public Long getAccountIdFromToken(String token, String expectedType) {
-        try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
-                    .parseClaimsJws(token)
-                    .getBody();
+		return Jwts.builder()
+				.setSubject(String.valueOf(accountId))
+				.claim("type", "refresh") // 리프레시 토큰임을 명시
+				.setIssuedAt(now)
+				.setExpiration(expiryDate)
+				.signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS256)
+				.compact();
+	}
 
-            String type = claims.get("type", String.class);
+	// 토큰에서 계정ID 추출 및 타입 체크
+	public Long getAccountIdFromToken(String token, String expectedType) {
+		try {
+			Claims claims = Jwts.parser()
+					.setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
+					.parseClaimsJws(token)
+					.getBody();
 
-            if (!expectedType.equalsIgnoreCase(type)) {
-                throw new CustomException(ErrorCode.INVALID_TOKEN);
-            }
+			String type = claims.get("type", String.class);
 
-            return Long.parseLong(claims.getSubject());
+			if (!expectedType.equalsIgnoreCase(type)) {
+				throw new CustomException(ErrorCode.INVALID_TOKEN);
+			}
 
-        } catch (ExpiredJwtException e) {
-            throw new CustomException(ErrorCode.ACCESS_TOKEN_EXPIRED);
+			return Long.parseLong(claims.getSubject());
 
-        } catch (JwtException | IllegalArgumentException e) {
-            throw new CustomException(ErrorCode.INVALID_TOKEN);
-        }
-    }
+		} catch (ExpiredJwtException e) {
+			throw new CustomException(ErrorCode.ACCESS_TOKEN_EXPIRED);
 
-    // 토큰 검증 (유효 & 타입)
-    public boolean validateToken(String token, String expectedType) {
-        try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
-                    .parseClaimsJws(token)
-                    .getBody();
+		} catch (JwtException | IllegalArgumentException e) {
+			throw new CustomException(ErrorCode.INVALID_TOKEN);
+		}
+	}
 
-            String type = claims.get("type", String.class);
-            return expectedType.equalsIgnoreCase(type);
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
-    }
+	// 토큰 검증 (유효 & 타입)
+	public boolean validateToken(String token, String expectedType) {
+		try {
+			Claims claims = Jwts.parser()
+					.setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
+					.parseClaimsJws(token)
+					.getBody();
+
+			String type = claims.get("type", String.class);
+			return expectedType.equalsIgnoreCase(type);
+		} catch (JwtException | IllegalArgumentException e) {
+			return false;
+		}
+	}
 }

@@ -8,8 +8,8 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public class ExpandGameDataRequest {
-    private final List<Long> targetAppIdList;
-    private final int startRankIndex;
-    private final int totalCount;
+	private final List<Long> targetAppIdList;
+	private final int startRankIndex;
+	private final int totalCount;
 
 }

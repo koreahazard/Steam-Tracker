@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class AccountInfoResponse {
-    private final Long accountId;
-    private final String username;
-    private final String email;
-    private final String nickname;
+	private final Long accountId;
+	private final String username;
+	private final String email;
+	private final String nickname;
 }

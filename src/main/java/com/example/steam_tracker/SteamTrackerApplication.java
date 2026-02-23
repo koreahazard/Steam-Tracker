@@ -14,7 +14,6 @@ public class SteamTrackerApplication {
 		SpringApplication.run(SteamTrackerApplication.class, args);
 
 
-
 	}
 
 }

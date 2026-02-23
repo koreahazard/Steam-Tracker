@@ -19,22 +19,22 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/steam-index")
 public class SteamIndexController {
-    private final SteamIndexService steamIndexService;
+	private final SteamIndexService steamIndexService;
 
-    @GetMapping("/history")
-    public ResponseEntity<ResponseForm<List<SteamIndexResponse>>> getIndexHistory(
-            @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "30") int size
-    ) {
-        log.info("스팀 지수 기록 조회 요청 - page: {}, size: {}", page, size);
-        List<SteamIndexResponse> response = steamIndexService.getIndexHistory(page, size);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ResponseForm.success(
-                        "SUCCESS",
-                        "스팀 지수 기록 조회 성공",
-                        response
-                ));
-    }
+	@GetMapping("/history")
+	public ResponseEntity<ResponseForm<List<SteamIndexResponse>>> getIndexHistory(
+			@RequestParam(required = false, defaultValue = "0") int page,
+			@RequestParam(required = false, defaultValue = "30") int size
+	) {
+		log.info("스팀 지수 기록 조회 요청 - page: {}, size: {}", page, size);
+		List<SteamIndexResponse> response = steamIndexService.getIndexHistory(page, size);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(ResponseForm.success(
+						"SUCCESS",
+						"스팀 지수 기록 조회 성공",
+						response
+				));
+	}
 
 }

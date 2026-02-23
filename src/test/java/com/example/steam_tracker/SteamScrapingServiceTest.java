@@ -11,23 +11,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SteamScrapingServiceTest {
 
-    private final SteamScrapingService steamScrapingService = new SteamScrapingServiceImpl();
+	private final SteamScrapingService steamScrapingService = new SteamScrapingServiceImpl();
 
-    @Test
-    @DisplayName("스팀스크래핑테스트")
-    void ScrapingTest() {
+	@Test
+	@DisplayName("스팀스크래핑테스트")
+	void ScrapingTest() {
 
-        int startRankIndex = 0;
-        int totalCount = 29;
+		int startRankIndex = 0;
+		int totalCount = 29;
 
-        // when
-        Set<Long> appIds = steamScrapingService.scrapingSteamAppId(startRankIndex, totalCount);
+		// when
+		Set<Long> appIds = steamScrapingService.scrapingSteamAppId(startRankIndex, totalCount);
 
-        // then
-        System.out.println("수집된 ID 개수: " + appIds.size());
-        System.out.println("ID 목록: " + appIds);
+		// then
+		System.out.println("수집된 ID 개수: " + appIds.size());
+		System.out.println("ID 목록: " + appIds);
 
-        assertThat(appIds).isNotEmpty();
-        assertThat(appIds.size()).isGreaterThanOrEqualTo(10);
-    }
+		assertThat(appIds).isNotEmpty();
+		assertThat(appIds.size()).isGreaterThanOrEqualTo(10);
+	}
 }

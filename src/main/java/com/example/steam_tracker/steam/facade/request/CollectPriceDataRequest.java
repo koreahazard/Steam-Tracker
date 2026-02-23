@@ -8,5 +8,5 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public class CollectPriceDataRequest {
-    private final List<Long> appIdList;
+	private final List<Long> appIdList;
 }

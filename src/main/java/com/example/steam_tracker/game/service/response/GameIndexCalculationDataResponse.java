@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class GameIndexCalculationDataResponse {
-    private long totalGameCount;
-    private long totalOriginalPrice;
-    private long totalCurrentPrice;
+	private long totalGameCount;
+	private long totalOriginalPrice;
+	private long totalCurrentPrice;
 }

@@ -7,13 +7,13 @@ import java.time.LocalDate;
 
 @Getter
 public class PriceHistoryResponse {
-    private final LocalDate snapshotDate;
-    private final int price;
-    private final int discountPercent;
+	private final LocalDate snapshotDate;
+	private final int price;
+	private final int discountPercent;
 
-    public PriceHistoryResponse(PriceHistory priceHistory) {
-        this.snapshotDate = priceHistory.getSnapshotDate();
-        this.price = priceHistory.getPrice();
-        this.discountPercent = priceHistory.getDiscountPercent();
-    }
+	public PriceHistoryResponse(PriceHistory priceHistory) {
+		this.snapshotDate = priceHistory.getSnapshotDate();
+		this.price = priceHistory.getPrice();
+		this.discountPercent = priceHistory.getDiscountPercent();
+	}
 }

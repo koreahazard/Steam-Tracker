@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class CollectPriceDataResponse {
-    private final Long appId;
-    private final int currentPrice;
-    private final int originalPrice;
-    private final int discountPercent;
+	private final Long appId;
+	private final int currentPrice;
+	private final int originalPrice;
+	private final int discountPercent;
 }

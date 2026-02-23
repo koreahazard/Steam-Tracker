@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface GameGenreMapRepository extends JpaRepository<GameGenreMap,Long> {
+public interface GameGenreMapRepository extends JpaRepository<GameGenreMap, Long> {
 
 }

@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface SteamIndexRepository extends JpaRepository<SteamIndex,Long> {
-    Page<SteamIndex> findAllByOrderByRecordDateDesc(Pageable pageable);
+public interface SteamIndexRepository extends JpaRepository<SteamIndex, Long> {
+	Page<SteamIndex> findAllByOrderByRecordDateDesc(Pageable pageable);
 }

@@ -6,5 +6,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class SignUpAccountResponse {
-    private final Long accountId;
+	private final Long accountId;
 }

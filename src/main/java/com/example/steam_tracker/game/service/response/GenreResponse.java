@@ -6,6 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class GenreResponse {
-    private final Long genreId;
-    private final String genreName;
+	private final Long genreId;
+	private final String genreName;
 }

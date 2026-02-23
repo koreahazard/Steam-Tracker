@@ -10,15 +10,15 @@ import lombok.NoArgsConstructor;
 @Table(name = "genre")
 @lombok.EqualsAndHashCode(of = "genreName")
 public class Genre {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long genreId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long genreId;
 
-    @Column(nullable = false,unique = true)
-    private String genreName;
+	@Column(nullable = false, unique = true)
+	private String genreName;
 
-    public Genre(String genreName) {
-        this.genreName = genreName;
-    }
+	public Genre(String genreName) {
+		this.genreName = genreName;
+	}
 
 }

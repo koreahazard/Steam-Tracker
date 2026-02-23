@@ -10,33 +10,32 @@ import lombok.NoArgsConstructor;
 @Table(name = "account")
 @NoArgsConstructor
 public class Account extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long accountId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long accountId;
 
-    @Column(nullable = false,unique = true)
-    private String username;
+	@Column(nullable = false, unique = true)
+	private String username;
 
-    @Column(nullable = false)
-    private String password;
+	@Column(nullable = false)
+	private String password;
 
-    @Column(nullable = false,unique = true)
-    private String email;
+	@Column(nullable = false, unique = true)
+	private String email;
 
-    @Column(nullable = false,unique = true)
-    private String nickname;
+	@Column(nullable = false, unique = true)
+	private String nickname;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private RoleType role = RoleType.USER;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private RoleType role = RoleType.USER;
 
-    public Account(String username, String password, String email, String nickname)
-    {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.nickname = nickname;
-    }
+	public Account(String username, String password, String email, String nickname) {
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.nickname = nickname;
+	}
 
 }
 

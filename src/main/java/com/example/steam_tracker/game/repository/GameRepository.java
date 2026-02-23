@@ -11,19 +11,19 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface GameRepository extends JpaRepository<Game,Long> {
-        List<Game> findAllByTrackingTrue();
+public interface GameRepository extends JpaRepository<Game, Long> {
+	List<Game> findAllByTrackingTrue();
 
-        @Query("SELECT new com.example.steam_tracker.game.service.response.GameIndexCalculationDataResponse(" +
-                "COUNT(g), SUM(g.originalPrice), SUM(g.currentPrice)) " +
-                "FROM Game g WHERE g.appId IN :appIds AND g.tracking = true")
+	@Query("SELECT new com.example.steam_tracker.game.service.response.GameIndexCalculationDataResponse(" +
+			"COUNT(g), SUM(g.originalPrice), SUM(g.currentPrice)) " +
+			"FROM Game g WHERE g.appId IN :appIds AND g.tracking = true")
+	GameIndexCalculationDataResponse getGameIndexCalculationData(@Param("appIds") List<Long> appIds);
 
-        GameIndexCalculationDataResponse getGameIndexCalculationData(@Param("appIds") List<Long> appIds);
+	Page<Game> findAllByTrackingTrue(Pageable pageable);
 
-        Page<Game> findAllByTrackingTrue(Pageable pageable);
+	@Query("SELECT DISTINCT g FROM Game g JOIN GameGenreMap m ON m.game = g WHERE m.genre.genreId IN :genreIds AND g.tracking = true")
+	Page<Game> findByGenreIds(@Param("genreIds") List<Long> genreIds, Pageable pageable);
 
-        @Query("SELECT DISTINCT g FROM Game g JOIN GameGenreMap m ON m.game = g WHERE m.genre.genreId IN :genreIds AND g.tracking = true")
-        Page<Game> findByGenreIds(@Param("genreIds") List<Long> genreIds, Pageable pageable);
-        Optional<Game> findByAppId(Long appId);
+	Optional<Game> findByAppId(Long appId);
 }
 

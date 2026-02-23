@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class SignUpAccountRequest {
-    private final String username;
-    private final String password;
-    private final String email;
-    private final String nickname;
+	private final String username;
+	private final String password;
+	private final String email;
+	private final String nickname;
 
 }

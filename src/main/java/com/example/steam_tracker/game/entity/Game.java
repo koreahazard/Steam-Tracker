@@ -8,65 +8,66 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name="game")
+@Table(name = "game")
 public class Game extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long gameId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long gameId;
 
-    @Column(nullable = false, unique = true)
-    private Long appId;
+	@Column(nullable = false, unique = true)
+	private Long appId;
 
-    @Column(nullable = false)
-    private String name;
+	@Column(nullable = false)
+	private String name;
 
-    @Column(nullable = false)
-    private int currentPrice;
+	@Column(nullable = false)
+	private int currentPrice;
 
-    @Column(nullable = false)
-    private int originalPrice;
+	@Column(nullable = false)
+	private int originalPrice;
 
-    @Column(nullable = false)
-    private int discountPercent;
+	@Column(nullable = false)
+	private int discountPercent;
 
-    @Column(nullable = false)
-    boolean tracking = true;
+	@Column(nullable = false)
+	boolean tracking = true;
 
-    public Game(Long appId, String name, int currentPrice, int originalPrice, int discountPercent) {
-        this.appId = appId;
-        this.name = name;
-        this.currentPrice = currentPrice;
-        this.originalPrice = originalPrice;
-        this.discountPercent = discountPercent;
+	public Game(Long appId, String name, int currentPrice, int originalPrice, int discountPercent) {
+		this.appId = appId;
+		this.name = name;
+		this.currentPrice = currentPrice;
+		this.originalPrice = originalPrice;
+		this.discountPercent = discountPercent;
 
-    }
-    public void updatePrice(int newCurrentPrice,
-                            int newOriginalPrice,
-                            int newDiscountPercent) {
+	}
 
-        // 값이 모두 안 변했으면 수정 x
-        if (this.currentPrice == newCurrentPrice
-                && this.originalPrice == newOriginalPrice
-                && this.discountPercent == newDiscountPercent) {
-            return;
-        }
+	public void updatePrice(int newCurrentPrice,
+							int newOriginalPrice,
+							int newDiscountPercent) {
 
-        // 변경 발생 시에만 값 세팅
-        this.currentPrice = newCurrentPrice;
-        this.originalPrice = newOriginalPrice;
-        this.discountPercent = newDiscountPercent;
-    }
+		// 값이 모두 안 변했으면 수정 x
+		if (this.currentPrice == newCurrentPrice
+				&& this.originalPrice == newOriginalPrice
+				&& this.discountPercent == newDiscountPercent) {
+			return;
+		}
 
-    public void thisIsFreeGame(int currentPrice,
-                               int originalPrice,
-                               int discountPercent,
-                               boolean tracking) {
-        this.currentPrice = currentPrice;
-        this.originalPrice = originalPrice;
-        this.discountPercent = discountPercent;
-        this.tracking = tracking;
-    }
+		// 변경 발생 시에만 값 세팅
+		this.currentPrice = newCurrentPrice;
+		this.originalPrice = newOriginalPrice;
+		this.discountPercent = newDiscountPercent;
+	}
+
+	public void thisIsFreeGame(int currentPrice,
+							   int originalPrice,
+							   int discountPercent,
+							   boolean tracking) {
+		this.currentPrice = currentPrice;
+		this.originalPrice = originalPrice;
+		this.discountPercent = discountPercent;
+		this.tracking = tracking;
+	}
 
 }
 

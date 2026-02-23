@@ -8,13 +8,13 @@ import java.time.LocalDate;
 
 @Getter
 public class SteamIndexResponse {
-    private final LocalDate recordDate;
-    private final Double indexValue;
-    private final Long totalGameCount;
+	private final LocalDate recordDate;
+	private final Double indexValue;
+	private final Long totalGameCount;
 
-    public SteamIndexResponse(SteamIndex steamIndex) {
-        this.recordDate = steamIndex.getRecordDate();
-        this.indexValue = steamIndex.getIndexValue();
-        this.totalGameCount = steamIndex.getTotalGameCount();
-    }
+	public SteamIndexResponse(SteamIndex steamIndex) {
+		this.recordDate = steamIndex.getRecordDate();
+		this.indexValue = steamIndex.getIndexValue();
+		this.totalGameCount = steamIndex.getTotalGameCount();
+	}
 }

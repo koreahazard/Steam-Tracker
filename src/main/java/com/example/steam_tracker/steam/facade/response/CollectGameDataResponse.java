@@ -8,11 +8,11 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public class CollectGameDataResponse {
-    private final Long appId;
-    private final String name;
-    private final int currentPrice;
-    private final int originalPrice;
-    private final int discountPercent;
-    private final List<String> genreNames;
+	private final Long appId;
+	private final String name;
+	private final int currentPrice;
+	private final int originalPrice;
+	private final int discountPercent;
+	private final List<String> genreNames;
 }
 

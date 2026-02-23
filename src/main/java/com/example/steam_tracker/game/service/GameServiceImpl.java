@@ -1,5 +1,7 @@
 package com.example.steam_tracker.game.service;
 
+import com.example.steam_tracker.common.CustomException;
+import com.example.steam_tracker.common.ErrorCode;
 import com.example.steam_tracker.game.entity.Game;
 import com.example.steam_tracker.game.entity.GameGenreMap;
 import com.example.steam_tracker.game.entity.Genre;
@@ -31,175 +33,181 @@ import java.util.*;
 @RequiredArgsConstructor
 @Slf4j
 @Getter
-public class GameServiceImpl implements GameService{
-    private final GameRepository gameRepository;
-    private final GenreRepository genreRepository;
-    private final GameGenreMapRepository gameGenreMapRepository;
-    private final PriceHistoryRepository priceHistoryRepository;
+public class GameServiceImpl implements GameService {
+	private final GameRepository gameRepository;
+	private final GenreRepository genreRepository;
+	private final GameGenreMapRepository gameGenreMapRepository;
+	private final PriceHistoryRepository priceHistoryRepository;
 
-    @Override
-    @Transactional
-    public void saveInitData(List<CollectGameDataResponse> dataList) {
-        List<Game> gameList = new ArrayList<>();
-        List<PriceHistory> priceHistoryList = new ArrayList<>();
-        List<GameGenreMap> gameGenreMapList = new ArrayList<>();
-        Map<String, Genre> genreMap = new HashMap<>();
-        LocalDate snapshotDate = LocalDate.now();
-        for (CollectGameDataResponse data : dataList) {
-
-
-            Game game = new Game(
-                    data.getAppId(),
-                    data.getName(),
-                    data.getCurrentPrice(),
-                    data.getOriginalPrice(),
-                    data.getDiscountPercent()
-            );
-            gameList.add(game);
-
-            PriceHistory history = new PriceHistory(
-                    game,
-                    data.getCurrentPrice(),
-                    data.getDiscountPercent(),
-                    snapshotDate
-            );
-
-            priceHistoryList.add(history);
+	@Override
+	@Transactional
+	public void saveInitData(List<CollectGameDataResponse> dataList) {
+		List<Game> gameList = new ArrayList<>();
+		List<PriceHistory> priceHistoryList = new ArrayList<>();
+		List<GameGenreMap> gameGenreMapList = new ArrayList<>();
+		Map<String, Genre> genreMap = new HashMap<>();
+		LocalDate snapshotDate = LocalDate.now();
+		for (CollectGameDataResponse data : dataList) {
 
 
-            for (String genreName : data.getGenreNames()) {
-                //Action 장르가 처음 나오면 새로 만들고, 이미 있으면 기존 것 가져옴
-                Genre genre = genreMap.computeIfAbsent(genreName, name -> new Genre(name));
+			Game game = new Game(
+					data.getAppId(),
+					data.getName(),
+					data.getCurrentPrice(),
+					data.getOriginalPrice(),
+					data.getDiscountPercent()
+			);
+			gameList.add(game);
 
-                // 배그(game)와 장르(genre)를 연결하는 줄을 하나 긋는 과정 (매핑 엔티티 생성)
-                GameGenreMap mapping = new GameGenreMap(game, genre);
-                gameGenreMapList.add(mapping);
-            }
+			PriceHistory history = new PriceHistory(
+					game,
+					data.getCurrentPrice(),
+					data.getDiscountPercent(),
+					snapshotDate
+			);
+
+			priceHistoryList.add(history);
 
 
-        }
-        gameRepository.saveAll(gameList);
-        genreRepository.saveAll(genreMap.values());
-        priceHistoryRepository.saveAll(priceHistoryList);
-        gameGenreMapRepository.saveAll(gameGenreMapList);
+			for (String genreName : data.getGenreNames()) {
+				//Action 장르가 처음 나오면 새로 만들고, 이미 있으면 기존 것 가져옴
+				Genre genre = genreMap.computeIfAbsent(genreName, name -> new Genre(name));
 
-        log.info("{}개의 게임, {}개의 장르, {}개의 매핑 데이터가 저장되었습니다.",
-                gameList.size(), genreMap.size(), gameGenreMapList.size());
-    }
-    @Override
-    @Transactional
-    public void updatePriceData(List<CollectPriceDataResponse> dataList) {
+				// 배그(game)와 장르(genre)를 연결하는 줄을 하나 긋는 과정 (매핑 엔티티 생성)
+				GameGenreMap mapping = new GameGenreMap(game, genre);
+				gameGenreMapList.add(mapping);
+			}
 
-        List<Game> trackingGames = gameRepository.findAllByTrackingTrue();
 
-        // 조회를 빠르게 하기 위해 appId를 키로 하는 Map 생성
-        Map<Long, Game> gameMap = new HashMap<>();
-        for (Game g : trackingGames) {
-            gameMap.put(g.getAppId(), g);
-        }
+		}
+		gameRepository.saveAll(gameList);
+		genreRepository.saveAll(genreMap.values());
+		priceHistoryRepository.saveAll(priceHistoryList);
+		gameGenreMapRepository.saveAll(gameGenreMapList);
 
-        List<PriceHistory> newPriceHistories = new ArrayList<>();
-        LocalDate snapshotDate = LocalDate.now();
+		log.info("{}개의 게임, {}개의 장르, {}개의 매핑 데이터가 저장되었습니다.",
+				gameList.size(), genreMap.size(), gameGenreMapList.size());
+	}
 
-        //외부에서 가져온 최신 데이터(dataList)를 순회
-        for (CollectPriceDataResponse data : dataList) {
-            Game game = gameMap.get(data.getAppId());
+	@Override
+	@Transactional
+	public void updatePriceData(List<CollectPriceDataResponse> dataList) {
 
-            // DB에 있고, 추적 중인 게임인 경우에만 처리
-            if (game != null) {
+		List<Game> trackingGames = gameRepository.findAllByTrackingTrue();
 
-                // 새로운 가격 이력 생성
-                if(data.getCurrentPrice()==0 && data.getOriginalPrice() ==0 ) {
+		// 조회를 빠르게 하기 위해 appId를 키로 하는 Map 생성
+		Map<Long, Game> gameMap = new HashMap<>();
+		for (Game g : trackingGames) {
+			gameMap.put(g.getAppId(), g);
+		}
 
-                    game.thisIsFreeGame(
-                            data.getCurrentPrice(),
-                            data.getOriginalPrice(),
-                            data.getDiscountPercent(),
-                            false
-                    );
-                }
-                else {
-                    //dirty checking
-                    game.updatePrice(
-                            data.getCurrentPrice(),
-                            data.getOriginalPrice(),
-                            data.getDiscountPercent()
-                    );
-                    PriceHistory history = new PriceHistory(
-                            game,
-                            data.getCurrentPrice(),
-                            data.getDiscountPercent(),
-                            snapshotDate
-                    );
-                    newPriceHistories.add(history);
-                }
+		List<PriceHistory> newPriceHistories = new ArrayList<>();
+		LocalDate snapshotDate = LocalDate.now();
 
-            }
-        }
+		//외부에서 가져온 최신 데이터(dataList)를 순회
+		for (CollectPriceDataResponse data : dataList) {
+			Game game = gameMap.get(data.getAppId());
 
-        priceHistoryRepository.saveAll(newPriceHistories);
+			// DB에 있고, 추적 중인 게임인 경우에만 처리
+			if (game != null) {
 
-        log.info("가격 업데이트 완료: {}개의 게임 상태 변경 및 이력 추가", newPriceHistories.size());
-    }
-    @Override
-    public boolean isEmpty() {
-        return gameRepository.count() == 0;
-    }
-    @Override
-    public List<Long> getTrackingAppIds() {
-        List<Game> trackingGames = gameRepository.findAllByTrackingTrue();
-        List<Long> appIdList = new ArrayList<>();
-        for (Game game : trackingGames) {
-            appIdList.add(game.getAppId());
-        }
-        return appIdList;
-    }
-    @Override
-    public GameIndexCalculationDataResponse getGameIndexCalculationData(List<Long> targetAppIdList) {
-        return gameRepository.getGameIndexCalculationData(targetAppIdList);
-    }
-    @Override
-    public List<GenreResponse> getAllGenres() {
-        List<Genre> genres = genreRepository.findAll();
-        List<GenreResponse> responseList = new ArrayList<>();
-        for (Genre genre : genres) {
-            responseList.add(new GenreResponse(genre.getGenreId(), genre.getGenreName()));
-        }
-        return responseList;
-    }
-    @Override
-    public List<GameListResponse> getGameList(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Game> games = gameRepository.findAllByTrackingTrue(pageable);
-        List<GameListResponse> responseList = new ArrayList<>();
-        for (Game game : games) {
-            responseList.add(new GameListResponse(game));
-        }
-        return responseList;
-    }
+				// 새로운 가격 이력 생성
+				if (data.getCurrentPrice() == 0 && data.getOriginalPrice() == 0) {
 
-    @Override
-    public List<GameListResponse> getGameListByGenres(List<Long> genreIds, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Game> games = gameRepository.findByGenreIds(genreIds, pageable);
-        List<GameListResponse> responseList = new ArrayList<>();
-        for (Game game : games) {
-            responseList.add(new GameListResponse(game));
-        }
-        return responseList;
-    }
-    @Override
-    public  List<PriceHistoryResponse> getPriceHistory(Long appId, int page, int size) {
-        Game game = gameRepository.findByAppId(appId)
-                .orElseThrow(() -> new RuntimeException("게임을 찾을 수 없습니다."));
-        Pageable pageable = PageRequest.of(page, size);
-        Page<PriceHistory> priceHistories = priceHistoryRepository.findByGameOrderBySnapshotDateDesc(game, pageable);
-        List<PriceHistoryResponse> responseList = new ArrayList<>();
-        for (PriceHistory priceHistory : priceHistories) {
-            responseList.add(new PriceHistoryResponse(priceHistory));
-        }
-        Collections.reverse(responseList);
-        return responseList;
-    }
+					game.thisIsFreeGame(
+							data.getCurrentPrice(),
+							data.getOriginalPrice(),
+							data.getDiscountPercent(),
+							false
+					);
+				} else {
+					//dirty checking
+					game.updatePrice(
+							data.getCurrentPrice(),
+							data.getOriginalPrice(),
+							data.getDiscountPercent()
+					);
+					PriceHistory history = new PriceHistory(
+							game,
+							data.getCurrentPrice(),
+							data.getDiscountPercent(),
+							snapshotDate
+					);
+					newPriceHistories.add(history);
+				}
+
+			}
+		}
+
+		priceHistoryRepository.saveAll(newPriceHistories);
+
+		log.info("가격 업데이트 완료: {}개의 게임 상태 변경 및 이력 추가", newPriceHistories.size());
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return gameRepository.count() == 0;
+	}
+
+	@Override
+	public List<Long> getTrackingAppIds() {
+		List<Game> trackingGames = gameRepository.findAllByTrackingTrue();
+		List<Long> appIdList = new ArrayList<>();
+		for (Game game : trackingGames) {
+			appIdList.add(game.getAppId());
+		}
+		return appIdList;
+	}
+
+	@Override
+	public GameIndexCalculationDataResponse getGameIndexCalculationData(List<Long> targetAppIdList) {
+		return gameRepository.getGameIndexCalculationData(targetAppIdList);
+	}
+
+	@Override
+	public List<GenreResponse> getAllGenres() {
+		List<Genre> genres = genreRepository.findAll();
+		List<GenreResponse> responseList = new ArrayList<>();
+		for (Genre genre : genres) {
+			responseList.add(new GenreResponse(genre.getGenreId(), genre.getGenreName()));
+		}
+		return responseList;
+	}
+
+	@Override
+	public List<GameListResponse> getGameList(int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<Game> games = gameRepository.findAllByTrackingTrue(pageable);
+		List<GameListResponse> responseList = new ArrayList<>();
+		for (Game game : games) {
+			responseList.add(new GameListResponse(game));
+		}
+		return responseList;
+	}
+
+	@Override
+	public List<GameListResponse> getGameListByGenres(List<Long> genreIds, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<Game> games = gameRepository.findByGenreIds(genreIds, pageable);
+		List<GameListResponse> responseList = new ArrayList<>();
+		for (Game game : games) {
+			responseList.add(new GameListResponse(game));
+		}
+		return responseList;
+	}
+
+	@Override
+	public List<PriceHistoryResponse> getPriceHistory(Long appId, int page, int size) {
+		Game game = gameRepository.findByAppId(appId)
+				.orElseThrow(() -> new CustomException(ErrorCode.GAME_NOT_FOUND));
+		Pageable pageable = PageRequest.of(page, size);
+		Page<PriceHistory> priceHistories = priceHistoryRepository.findByGameOrderBySnapshotDateDesc(game, pageable);
+		List<PriceHistoryResponse> responseList = new ArrayList<>();
+		for (PriceHistory priceHistory : priceHistories) {
+			responseList.add(new PriceHistoryResponse(priceHistory));
+		}
+		Collections.reverse(responseList);
+		return responseList;
+	}
 
 }

@@ -6,6 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PriceHistoryRepository extends JpaRepository<PriceHistory,Long> {
-    Page<PriceHistory> findByGameOrderBySnapshotDateDesc(Game game, Pageable pageable);
+public interface PriceHistoryRepository extends JpaRepository<PriceHistory, Long> {
+	Page<PriceHistory> findByGameOrderBySnapshotDateDesc(Game game, Pageable pageable);
 }
