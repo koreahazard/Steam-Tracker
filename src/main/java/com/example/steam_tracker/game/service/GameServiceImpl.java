@@ -205,7 +205,7 @@ public class GameServiceImpl implements GameService {
 	@Override
 	public List<GameListResponse> getGameListByGenres(List<Long> genreIds, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
-		Page<Game> games = gameRepository.findByGenreIds(genreIds, pageable);
+		Page<Game> games = gameRepository.findByGenreIds(genreIds, (long) genreIds.size(), pageable);
 		List<GameListResponse> responseList = new ArrayList<>();
 		for (Game game : games) {
 			responseList.add(new GameListResponse(game));

@@ -108,4 +108,16 @@ public class AccountController {
 						response
 				));
 	}
+	@CrossOrigin(origins = "http://localhost:5173")
+	@GetMapping("/test")
+	public ResponseEntity<ResponseForm<String>> test() {
+		log.info("[테스트] API 호출");
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(ResponseForm.success(
+						"SUCCESS",
+						"백엔드 연결 성공!",
+						"테스트용 응답입니다"
+				));
+	}
 }

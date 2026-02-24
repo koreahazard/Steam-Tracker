@@ -21,8 +21,9 @@ public interface GameRepository extends JpaRepository<Game, Long> {
 
 	Page<Game> findAllByTrackingTrue(Pageable pageable);
 
-	@Query("SELECT DISTINCT g FROM Game g JOIN GameGenreMap m ON m.game = g WHERE m.genre.genreId IN :genreIds AND g.tracking = true")
-	Page<Game> findByGenreIds(@Param("genreIds") List<Long> genreIds, Pageable pageable);
+	@Query("SELECT g FROM Game g WHERE g.tracking = true AND " +
+			"(SELECT COUNT(DISTINCT m.genre.genreId) FROM GameGenreMap m WHERE m.game = g AND m.genre.genreId IN :genreIds) = :genreCount")
+	Page<Game> findByGenreIds(@Param("genreIds") List<Long> genreIds, @Param("genreCount") long genreCount, Pageable pageable);
 
 	Optional<Game> findByAppId(Long appId);
 }

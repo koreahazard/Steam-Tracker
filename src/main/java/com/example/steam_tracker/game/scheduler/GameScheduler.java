@@ -1,4 +1,4 @@
-package com.example.steam_tracker.game.schedular;
+package com.example.steam_tracker.game.scheduler;
 
 import com.example.steam_tracker.game.service.GameService;
 import com.example.steam_tracker.steam.facade.SteamCollectorFacade;
@@ -23,7 +23,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class GameSchedular {
+public class GameScheduler {
 
 	private final SteamCollectorFacade steamCollectorFacade;
 	private final GameService gameService;
@@ -67,7 +67,7 @@ public class GameSchedular {
 		}
 	}
 
-	@Scheduled(cron = "0 */5 * * * *")
+	@Scheduled(cron = "0 0 12 * * *")
 	public void periodicCollect() {
 
 		if (!collectLock.tryLock()) {
