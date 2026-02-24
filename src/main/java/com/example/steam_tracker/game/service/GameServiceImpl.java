@@ -97,7 +97,6 @@ public class GameServiceImpl implements GameService {
 			}
 		}
 
-// ✅ 새 장르만 저장
 		genreRepository.saveAll(newGenres);
 
 		priceHistoryRepository.saveAll(priceHistoryList);
