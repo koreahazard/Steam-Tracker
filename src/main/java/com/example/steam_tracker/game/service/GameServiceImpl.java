@@ -42,13 +42,20 @@ public class GameServiceImpl implements GameService {
 	@Override
 	@Transactional
 	public void saveInitData(List<CollectGameDataResponse> dataList) {
+
 		List<Game> gameList = new ArrayList<>();
 		List<PriceHistory> priceHistoryList = new ArrayList<>();
 		List<GameGenreMap> gameGenreMapList = new ArrayList<>();
 		Map<String, Genre> genreMap = new HashMap<>();
 		LocalDate snapshotDate = LocalDate.now();
-		for (CollectGameDataResponse data : dataList) {
 
+
+		List<Genre> existingGenres = genreRepository.findAll();
+		for (Genre genre : existingGenres) {
+			genreMap.put(genre.getGenreName(), genre);
+		}
+
+		for (CollectGameDataResponse data : dataList) {
 
 			Game game = new Game(
 					data.getAppId(),
@@ -65,23 +72,34 @@ public class GameServiceImpl implements GameService {
 					data.getDiscountPercent(),
 					snapshotDate
 			);
-
 			priceHistoryList.add(history);
 
-
 			for (String genreName : data.getGenreNames()) {
-				//Action 장르가 처음 나오면 새로 만들고, 이미 있으면 기존 것 가져옴
-				Genre genre = genreMap.computeIfAbsent(genreName, name -> new Genre(name));
 
-				// 배그(game)와 장르(genre)를 연결하는 줄을 하나 긋는 과정 (매핑 엔티티 생성)
+
+				Genre genre = genreMap.computeIfAbsent(
+						genreName,
+						name -> new Genre(name)
+				);
+
 				GameGenreMap mapping = new GameGenreMap(game, genre);
 				gameGenreMapList.add(mapping);
 			}
-
-
 		}
+
 		gameRepository.saveAll(gameList);
-		genreRepository.saveAll(genreMap.values());
+
+		List<Genre> newGenres = new ArrayList<>();
+
+		for (Genre genre : genreMap.values()) {
+			if (genre.getGenreId() == null) {   // DB에 없는 새 장르
+				newGenres.add(genre);
+			}
+		}
+
+// ✅ 새 장르만 저장
+		genreRepository.saveAll(newGenres);
+
 		priceHistoryRepository.saveAll(priceHistoryList);
 		gameGenreMapRepository.saveAll(gameGenreMapList);
 
