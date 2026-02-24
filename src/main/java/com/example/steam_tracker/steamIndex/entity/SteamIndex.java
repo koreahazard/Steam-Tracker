@@ -38,4 +38,13 @@ public class SteamIndex extends BaseEntity {
 		this.totalCurrentPrice = totalCurrentPrice;
 		this.totalGameCount = totalGameCount;
 	}
+	public void update(Double indexValue,
+							Long totalOriginalPrice,
+							Long totalCurrentPrice,
+							Long totalGameCount) {
+		this.indexValue = indexValue;
+		this.totalOriginalPrice = totalOriginalPrice;
+		this.totalCurrentPrice = totalCurrentPrice;
+		this.totalGameCount = totalGameCount;
+	}
 }

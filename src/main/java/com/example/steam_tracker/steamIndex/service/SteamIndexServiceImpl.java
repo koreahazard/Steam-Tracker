@@ -30,30 +30,50 @@ public class SteamIndexServiceImpl implements SteamIndexService {
 	@Override
 	@Transactional
 	public void recordDailyIndex(List<Long> targetAppIdList) {
+
 		if (targetAppIdList == null || targetAppIdList.isEmpty()) {
 			log.warn("지수 기록 중단: 대상 appId 리스트가 비어있습니다.");
 			return;
 		}
-		GameIndexCalculationDataResponse data = gameService.getGameIndexCalculationData(targetAppIdList);
+
+		GameIndexCalculationDataResponse data =
+				gameService.getGameIndexCalculationData(targetAppIdList);
 
 		if (data.getTotalOriginalPrice() == 0) {
 			log.warn("지수 기록 중단: 정가 합계가 0입니다.");
 			return;
 		}
-		double indexValue = ((double) data.getTotalCurrentPrice() / data.getTotalOriginalPrice()) * 1000;
+
+		double indexValue =
+				((double) data.getTotalCurrentPrice() / data.getTotalOriginalPrice()) * 1000;
 		indexValue = Math.round(indexValue * 100.0) / 100.0;
 
 		LocalDate today = LocalDate.now();
 
-		SteamIndex steamIndex = new SteamIndex(
-				today,
-				indexValue,
-				data.getTotalOriginalPrice(),
-				data.getTotalCurrentPrice(),
-				data.getTotalGameCount()
-		);
-		steamIndexRepository.save(steamIndex);
-		log.info("Steam 시장 지수 기록 완료 (날짜: {}, 지수: {}, 게임 수: {})", today, indexValue, data.getTotalGameCount());
+
+		SteamIndex existing =
+				steamIndexRepository.findByRecordDate(today);
+
+		if (existing != null) {
+			existing.update(
+					indexValue,
+					data.getTotalOriginalPrice(),
+					data.getTotalCurrentPrice(),
+					data.getTotalGameCount()
+			);
+			log.info("Steam 시장 지수 UPDATE 완료 (날짜: {}, 지수: {})", today, indexValue);
+
+		} else {
+			SteamIndex steamIndex = new SteamIndex(
+					today,
+					indexValue,
+					data.getTotalOriginalPrice(),
+					data.getTotalCurrentPrice(),
+					data.getTotalGameCount()
+			);
+			steamIndexRepository.save(steamIndex);
+			log.info("Steam 시장 지수 INSERT 완료 (날짜: {}, 지수: {})", today, indexValue);
+		}
 
 	}
 
