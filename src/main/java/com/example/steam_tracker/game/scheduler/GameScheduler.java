@@ -67,7 +67,7 @@ public class GameScheduler {
 		}
 	}
 
-	@Scheduled(cron = "0 0 12 * * *")
+	@Scheduled(cron = "0 0 12 * * *", zone = "Asia/Seoul")
 	public void periodicCollect() {
 
 		if (!collectLock.tryLock()) {
