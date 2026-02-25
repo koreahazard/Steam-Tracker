@@ -47,7 +47,7 @@ public class GameScheduler {
 
 		try {
 			int startRankIndex = 0;
-			int totalCount = 100;
+			int totalCount = 500;
 
 			CollectGameDataRequest request =
 					new CollectGameDataRequest(startRankIndex, totalCount);
@@ -78,9 +78,9 @@ public class GameScheduler {
 		try {
 
 			log.info("주기적 업데이트 스케줄러 시작");
-			int minimumConstituentCount = 100;
-			int startRankIndex = 200;
-			int totalCount = 100;
+			int minimumConstituentCount = 500;
+			int startRankIndex = 600;
+			int totalCount = 300;
 
 			List<Long> targetAppIdList = gameService.getTrackingAppIds();
 
