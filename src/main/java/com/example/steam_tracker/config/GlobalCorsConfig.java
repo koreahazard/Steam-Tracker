@@ -9,7 +9,10 @@ public class GlobalCorsConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
-				.allowedOrigins("http://localhost:5173")  // 프론트 주소
+				.allowedOrigins(
+						"http://localhost:5173",
+						"https://배포후vercel주소.vercel.app"  // Vercel 배포 후 추가
+				)
 				.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
 				.allowedHeaders("*")
 				.allowCredentials(true)
