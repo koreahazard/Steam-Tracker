@@ -11,7 +11,7 @@ public class GlobalCorsConfig implements WebMvcConfigurer {
 		registry.addMapping("/**")
 				.allowedOrigins(
 						"http://localhost:5173",
-						"https://https://react-steam-tracker-frontend-6zzi.vercel.app/"  // Vercel 배포 후 추가
+						"https://react-steam-tracker-frontend-6zzi.vercel.app"  // Vercel 배포 후 추가
 				)
 				.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
 				.allowedHeaders("*")
