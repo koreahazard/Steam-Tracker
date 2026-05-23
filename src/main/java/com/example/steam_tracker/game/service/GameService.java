@@ -10,7 +10,6 @@ import com.example.steam_tracker.steam.facade.response.CollectPriceDataResponse;
 import java.util.List;
 
 public interface GameService {
-	//최초 1회 게임 데이터 저장
 	void saveInitData(List<CollectGameDataResponse> dataList);
 
 	void updatePriceData(List<CollectPriceDataResponse> dataList);
@@ -23,10 +22,9 @@ public interface GameService {
 
 	List<GenreResponse> getAllGenres();
 
-	List<GameListResponse> getGameList(int page, int size);
+	List<GameListResponse> getGameList(int page, int size, String sortBy);
 
-	List<GameListResponse> getGameListByGenres(List<Long> genreIds, int page, int size);
+	List<GameListResponse> getGameListByGenres(List<Long> genreIds, int page, int size, String sortBy);
 
 	List<PriceHistoryResponse> getPriceHistory(Long appId, int page, int size);
-
 }

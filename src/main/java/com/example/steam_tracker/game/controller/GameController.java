@@ -38,14 +38,15 @@ public class GameController {
 	public ResponseEntity<ResponseForm<List<GameListResponse>>> getGameList(
 			@RequestParam(required = false) List<Long> genreIds,
 			@RequestParam(required = false, defaultValue = "0") int page,
-			@RequestParam(required = false, defaultValue = "20") int size
+			@RequestParam(required = false, defaultValue = "20") int size,
+			@RequestParam(required = false, defaultValue = "default") String sortBy
 	) {
-		log.info("게임 목록 조회 요청 - genreIds: {}, page: {}, size: {}", genreIds, page, size);
+		log.info("게임 목록 조회 요청 - genreIds: {}, page: {}, size: {}, sortBy: {}", genreIds, page, size, sortBy);
 		List<GameListResponse> response;
 		if (genreIds == null || genreIds.isEmpty()) {
-			response = gameService.getGameList(page, size);
+			response = gameService.getGameList(page, size, sortBy);
 		} else {
-			response = gameService.getGameListByGenres(genreIds, page, size);
+			response = gameService.getGameListByGenres(genreIds, page, size, sortBy);
 		}
 		return ResponseEntity
 				.status(HttpStatus.OK)
@@ -72,6 +73,4 @@ public class GameController {
 						response
 				));
 	}
-
-
 }
